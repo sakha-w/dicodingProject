@@ -1,19 +1,19 @@
 package org.d3if3102.dicoding.ui.main
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.d3if3102.dicoding.data.local.SettingPreferences
 import org.d3if3102.dicoding.data.remoteApi.RetrofitApi
 import org.d3if3102.dicoding.utils.Result
 
-class MainViewModel(private val preferences: SettingPreferences) : ViewModel() {
+class MainViewModel : ViewModel() {
 
     val resultUser = MutableLiveData<Result>()
-    fun getTheme() = preferences.getThemeSetting().asLiveData()
 
     fun getUser() {
         viewModelScope.launch {
@@ -60,11 +60,5 @@ class MainViewModel(private val preferences: SettingPreferences) : ViewModel() {
                 resultUser.value = Result.Success(it.items)
             }
         }
-    }
-    class Factory(private val preferences: SettingPreferences) :
-        ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            MainViewModel(preferences) as T
     }
 }

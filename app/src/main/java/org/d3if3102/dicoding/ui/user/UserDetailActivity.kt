@@ -11,7 +11,6 @@ import coil.load
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.d3if3102.dicoding.R
-import org.d3if3102.dicoding.data.local.DbModule
 import org.d3if3102.dicoding.databinding.ActivityUserDetailBinding
 import org.d3if3102.dicoding.model.GithubUserDetail
 import org.d3if3102.dicoding.model.GithubUserResponse
@@ -19,9 +18,7 @@ import org.d3if3102.dicoding.utils.Result
 
 class UserDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserDetailBinding
-    private val viewModel by viewModels<UserDetailViewModel> {
-        UserDetailViewModel.Factory(DbModule(this))
-    }
+    private val viewModel by viewModels<UserDetailViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +35,10 @@ class UserDetailActivity : AppCompatActivity() {
                     val user = it.data as GithubUserDetail
                     binding.ivUser.load(user.avatar_url) {
                     }
-
+                    binding.tvFollower.text = user.followers.toString()
+                    binding.tvFollowing.text = user.following.toString()
                     binding.tvUser.text = user.name
+                    binding.tvUsername.text = user.login
                 }
                 is Result.Error -> {
                     Toast.makeText(this, it.exception.message.toString(), Toast.LENGTH_SHORT).show()
@@ -87,6 +86,7 @@ class UserDetailActivity : AppCompatActivity() {
         viewModel.getFollowers(username)
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {

@@ -6,11 +6,9 @@ import android.os.Parcelable
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.d3if3102.dicoding.data.local.SettingPreferences
 import org.d3if3102.dicoding.databinding.ActivityMainBinding
 import org.d3if3102.dicoding.model.GithubUserResponse
 import org.d3if3102.dicoding.ui.user.UserDetailActivity
@@ -27,27 +25,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private val viewModel by viewModels<MainViewModel> {
-        MainViewModel.Factory(SettingPreferences(this))
-    }
+    private val viewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.getTheme().observe(this) {
-            if (it) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
 
         binding.rvUser.layoutManager = LinearLayoutManager(this)
         binding.rvUser.setHasFixedSize(true)
         binding.rvUser.adapter = adapter
 
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 viewModel.getUser(p0.toString())
                 return true

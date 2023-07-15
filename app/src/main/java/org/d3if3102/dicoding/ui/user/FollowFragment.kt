@@ -41,17 +41,17 @@ class FollowFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireActivity())
             setHasFixedSize(true)
             adapter = this@FollowFragment.adapter
-    }
-            when (type) {
-                FOLLOWERS -> {
-                    viewModel.resultUserFollower.observe(viewLifecycleOwner, this::manageResultFollows)
-                }
+        }
+        when (type) {
+            FOLLOWERS -> {
+                viewModel.resultUserFollower.observe(viewLifecycleOwner, this::manageResultFollows)
+            }
 
-                FOLLOWING -> {
-                    viewModel.resultUserFollowing.observe(viewLifecycleOwner, this::manageResultFollows)
-                }
+            FOLLOWING -> {
+                viewModel.resultUserFollowing.observe(viewLifecycleOwner, this::manageResultFollows)
             }
         }
+    }
 
     private fun manageResultFollows(state: Result) {
         when (state) {
