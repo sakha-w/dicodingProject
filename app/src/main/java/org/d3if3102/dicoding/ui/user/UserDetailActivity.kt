@@ -1,16 +1,21 @@
 package org.d3if3102.dicoding.ui.user
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import coil.load
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.d3if3102.dicoding.R
+import org.d3if3102.dicoding.data.roomDb.DbModule
 import org.d3if3102.dicoding.databinding.ActivityUserDetailBinding
 import org.d3if3102.dicoding.model.GithubUserDetail
 import org.d3if3102.dicoding.model.GithubUserResponse
@@ -18,7 +23,9 @@ import org.d3if3102.dicoding.utils.Result
 
 class UserDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserDetailBinding
-    private val viewModel by viewModels<UserDetailViewModel>()
+    private val viewModel by viewModels<UserDetailViewModel> {
+        UserDetailViewModel.Factory(DbModule(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +92,22 @@ class UserDetailActivity : AppCompatActivity() {
 
         viewModel.getFollowers(username)
 
+        viewModel.resultSuccessFavorite.observe(this) {
+            binding.fab.changeIconColor(R.color.red)
+        }
+
+        viewModel.resultDeleteFavorite.observe(this) {
+            binding.fab.changeIconColor(R.color.white)
+        }
+
+        binding.fab.setOnClickListener {
+            viewModel.setFavorite(item)
+        }
+
+        viewModel.findFavorite(item?.id ?: 0) {
+            binding.fab.changeIconColor(R.color.red)
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -95,6 +118,9 @@ class UserDetailActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+}
+fun FloatingActionButton.changeIconColor(@ColorRes color: Int) {
+    imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this.context, color))
 }
 
 

@@ -2,6 +2,7 @@ package org.d3if3102.dicoding.ui.user
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -9,13 +10,18 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.d3if3102.dicoding.data.remoteApi.RetrofitApi
+import org.d3if3102.dicoding.data.roomDb.DbModule
+import org.d3if3102.dicoding.model.GithubUserResponse
 import org.d3if3102.dicoding.utils.Result
 
-class UserDetailViewModel : ViewModel() {
+class UserDetailViewModel(private val db: DbModule) : ViewModel() {
     val resultUserDetail = MutableLiveData<Result>()
     val resultUserFollower = MutableLiveData<Result>()
     val resultUserFollowing = MutableLiveData<Result>()
+    val resultSuccessFavorite = MutableLiveData<Boolean>()
+    val resultDeleteFavorite = MutableLiveData<Boolean>()
 
+    private var isFavorite = false
     fun getUserDetail(username: String) {
         viewModelScope.launch {
             flow {
@@ -77,6 +83,35 @@ class UserDetailViewModel : ViewModel() {
                 resultUserFollowing.value = Result.Success(it)
             }
         }
+    }
+
+
+    fun setFavorite(item: GithubUserResponse.Item?) {
+        viewModelScope.launch {
+            item?.let {
+                if (isFavorite) {
+                    db.userDao.delete(item)
+                    resultDeleteFavorite.value = true
+                } else {
+                    db.userDao.insert(item)
+                    resultSuccessFavorite.value = true
+                }
+            }
+            isFavorite = !isFavorite
+        }
+    }
+
+    fun findFavorite(id: Int, listFavorite: () -> Unit) {
+        viewModelScope.launch {
+            val user = db.userDao.findById(id)
+            if (user != null) {
+                listFavorite()
+                isFavorite = true
+            }
+        }
+    }
+    class Factory(private val db: DbModule) : ViewModelProvider.NewInstanceFactory() {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = UserDetailViewModel(db) as T
     }
 
 

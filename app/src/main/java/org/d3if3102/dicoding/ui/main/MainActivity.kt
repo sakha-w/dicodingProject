@@ -3,14 +3,19 @@ package org.d3if3102.dicoding.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import org.d3if3102.dicoding.R
 import org.d3if3102.dicoding.databinding.ActivityMainBinding
 import org.d3if3102.dicoding.model.GithubUserResponse
+import org.d3if3102.dicoding.ui.favorite.FavoriteActivity
+import org.d3if3102.dicoding.ui.setting.SettingActivity
 import org.d3if3102.dicoding.ui.user.UserDetailActivity
 import org.d3if3102.dicoding.utils.Result
 
@@ -62,5 +67,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.getUser()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_bar, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.favorite -> {
+                Intent(this, FavoriteActivity::class.java).apply {
+                    startActivity(this)
+                }
+            }
+            R.id.setting -> {
+                Intent(this, SettingActivity::class.java).apply {
+                    startActivity(this)
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
